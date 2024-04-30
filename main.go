@@ -36,12 +36,27 @@ func main() {
 		scrapeStart(in1)
 
 		time.Sleep(2 * time.Second)
+		i -= 1
 	}
 
 }
 
 func scrapeStart(url string) {
 	c := colly.NewCollector()
+
+	var tanggalPesanan, stasiunAsal, stasiunTujuan string
+
+	c.OnHTML("input[name='origination']#origination", func(e *colly.HTMLElement) {
+		stasiunAsal = e.Attr("value")
+	})
+
+	c.OnHTML("input[name='destination']#destination", func(e *colly.HTMLElement) {
+		stasiunTujuan = e.Attr("value")
+	})
+
+	c.OnHTML("input[name='tanggal']#departure_dateh", func(e *colly.HTMLElement) {
+		tanggalPesanan = e.Attr("value")
+	})
 
 	c.OnHTML("html", func(e *colly.HTMLElement) {
 		isSold := strings.Contains(e.Text, "Habis")
@@ -51,12 +66,12 @@ func scrapeStart(url string) {
 		currentTime := time.Now().Format("15:04:05")
 
 		if isSold {
-			fmt.Println("Ticket 08/02/2024 Sold <<<<<<<<<<<", currentTime)
+			fmt.Printf("Ticket KAI [%s-%s %s] SOLD <<<<<<<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
 			return
 		}
 
 		if isAvail || isLimit {
-			fmt.Printf("Tiket 08/02/2024 Available <<<<<<< %s\n", currentTime)
+			fmt.Printf("Tiket KAI [%s-%s %s] AVAILABLE <<<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
 			sendEmail(subject, textBody)
 			return
 		}
@@ -70,7 +85,6 @@ func scrapeStart(url string) {
 
 	c.Visit(url)
 
-	// No need for ticker and select since we only run it once
 }
 
 func sendEmail(subject, textBody string) {

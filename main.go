@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gen2brain/beeep"
 	"github.com/gocolly/colly"
 	"gopkg.in/gomail.v2"
 )
@@ -42,8 +43,6 @@ func main() {
 }
 
 func scrapeStart(url string) {
-	// var Green = "\033[32m"
-	// var Reset = "\033[0m"
 
 	c := colly.NewCollector()
 
@@ -66,8 +65,6 @@ func scrapeStart(url string) {
 		isAvail := strings.Contains(e.Text, "Tersedia")
 		isLimit := strings.Contains(e.Text, "Tersisa")
 
-		fmt.Print("isi text = ", e.Text)
-
 		currentTime := time.Now().Format("15:04:05")
 
 		if isSold {
@@ -77,6 +74,7 @@ func scrapeStart(url string) {
 
 		if isAvail || isLimit {
 			fmt.Printf("\033[1mTicket KAI \033[33;1m[%s-%s %s] \033[32;1mAVAILABLE \033[0m<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
+			notifyBySound()
 			sendEmail(subject, textBody)
 			return
 		}
@@ -90,6 +88,13 @@ func scrapeStart(url string) {
 
 	c.Visit(url)
 
+}
+
+func notifyBySound() {
+	err := beeep.Beep(1, beeep.DefaultDuration)
+	if err != nil {
+		fmt.Println("Error notifying:", err)
+	}
 }
 
 func sendEmail(subject, textBody string) {

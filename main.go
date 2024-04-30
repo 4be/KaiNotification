@@ -42,6 +42,9 @@ func main() {
 }
 
 func scrapeStart(url string) {
+	// var Green = "\033[32m"
+	// var Reset = "\033[0m"
+
 	c := colly.NewCollector()
 
 	var tanggalPesanan, stasiunAsal, stasiunTujuan string
@@ -63,15 +66,17 @@ func scrapeStart(url string) {
 		isAvail := strings.Contains(e.Text, "Tersedia")
 		isLimit := strings.Contains(e.Text, "Tersisa")
 
+		fmt.Print("isi text = ", e.Text)
+
 		currentTime := time.Now().Format("15:04:05")
 
 		if isSold {
-			fmt.Printf("Ticket KAI [%s-%s %s] SOLD <<<<<<<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
+			fmt.Printf("\033[1mTicket KAI \033[33;1m[%s-%s %s] \033[31mSOLD \033[0m<<<<<<<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
 			return
 		}
 
 		if isAvail || isLimit {
-			fmt.Printf("Tiket KAI [%s-%s %s] AVAILABLE <<<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
+			fmt.Printf("\033[1mTicket KAI \033[33;1m[%s-%s %s] \033[32;1mAVAILABLE \033[0m<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
 			sendEmail(subject, textBody)
 			return
 		}

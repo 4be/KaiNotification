@@ -18,7 +18,8 @@ const (
 )
 
 var (
-	fromEmail = "gakpernahlupa@gmail.com"
+	fromEmail = "Harumnyoo <ews@gmail.com>"
+	coreEmail = "gakpernahlupa@gmail.com"
 	toEmail   = "jaderizan@gmail.com"
 	subject   = "Tiket Bandung - Jakarta Tersedia!"
 	textBody  = "Beli gan buruan"
@@ -107,7 +108,7 @@ func sendEmail(subject, textBody string) {
 	mailer.SetBody("text/plain", textBody)
 	mailer.SetBody("text/html", htmlBody)
 
-	dialer := gomail.NewDialer("smtp.gmail.com", 587, fromEmail, "aztwwnpupmrhfhtk")
+	dialer := gomail.NewDialer("smtp.gmail.com", 587, coreEmail, "aztwwnpupmrhfhtk")
 
 	if err := dialer.DialAndSend(mailer); err != nil {
 		log.Println("Error sending email:", err)

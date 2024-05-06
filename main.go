@@ -3,18 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
 	"time"
 
 	"github.com/gen2brain/beeep"
 	"github.com/gocolly/colly"
 	"gopkg.in/gomail.v2"
-)
-
-const (
-	baseURL   = "https://booking.kai.id"
-	endpoint  = "/search?origination=n4aQD3sKMNnw1kDOEJg3zQ%3D%3D&destination=ykzJ6TGEvaQymY%2BY2hXnmA%3D%3D&tanggal=pduPkj1YvIsCQzvmTZbKcULjz2L8MsfAGymVI9PsRno%3D&adult=8Ho6OKf8tFhcLcNlxENpVg%3D%3D&infant=ThM%2B2IHux7cEkbUR6e9yBg%3D%3D&book_type="
-	targetURL = baseURL + endpoint
 )
 
 var (
@@ -37,7 +32,7 @@ func main() {
 	for i := 0; i < 10; i++ {
 		scrapeStart(in1)
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 		i -= 1
 	}
 
@@ -76,7 +71,7 @@ func scrapeStart(url string) {
 		if isAvail || isLimit {
 			fmt.Printf("\033[1mTicket KAI \033[33;1m[%s-%s %s] \033[32;1mAVAILABLE \033[0m<<<<< %s\n", stasiunAsal, stasiunTujuan, tanggalPesanan, currentTime)
 			notifyBySound()
-			sendEmail(subject, textBody)
+			sendEmail(subject, textBody, url)
 			return
 		}
 
@@ -98,8 +93,8 @@ func notifyBySound() {
 	}
 }
 
-func sendEmail(subject, textBody string) {
-	htmlBody := fmt.Sprintf("<b>Link to buy:</b> <a href=\"%s\">HERE</a>", targetURL)
+func sendEmail(subject, textBody, url string) {
+	htmlBody := fmt.Sprintf("<b>Link to buy:</b> <a href=\"%s\">HERE</a>", url)
 
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", fromEmail)
